@@ -66,7 +66,7 @@ app.post('/register/',(req,res,next)=>{
         if(result && result.length)
         res.json('User already exist');
     else{
-        con.query('insert into user_account (`email`, `username`, `password`, `salt`, `date_of_birth`, `date_join`, `update_at`) VALUES (?,?,?,?,?,NOW(),NOW())',[email,username,password,salt,dateofbirth],function(err,result,fields){
+        con.query('insert into user_account (`email`, `username`, `password`, `salt`, `date_of_birth`, `date_join`) VALUES (?,?,?,?,?,NOW())',[email,username,password,salt,dateofbirth],function(err,result,fields){
             con.on('error',function(err){
                 console.log("[MYSQL ERROR]", err);
                 res.json('Register Error');
