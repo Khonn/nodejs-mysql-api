@@ -59,14 +59,14 @@ app.post('/register/',(req,res,next)=>{
     var email = post_data.email;
     var dateofbirth = post_data.dateofbirth;
     
-    con.query('select * from USER_ACCOUNT where email=?',[email],function(err,result,fields){   
+    con.query('select * from user_account where email=?',[email],function(err,result,fields){   
         con.on('error',function(err){
             console.log("[MYSQL ERROR]", err)
         });
         if(result && result.length)
         res.json('User already exist');
     else{
-        con.query('insert into USER_ACCOUNT (`email`, `username`, `password`, `salt`, `date_of_birth`, `date_join`, `update_at`) VALUES (?,?,?,?,?,NOW(),NOW())',[email,username,password,salt,dateofbirth],function(err,result,fields){
+        con.query('insert into user_account (`email`, `username`, `password`, `salt`, `date_of_birth`, `date_join`, `update_at`) VALUES (?,?,?,?,?,NOW(),NOW())',[email,username,password,salt,dateofbirth],function(err,result,fields){
             con.on('error',function(err){
                 console.log("[MYSQL ERROR]", err);
                 res.json('Register Error');
