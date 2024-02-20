@@ -170,6 +170,22 @@ app.post('/addcollection/',(req,res,next)=>{
 });
 
 
+app.post('/getcollection/',(req,res)=>{
+    var post_data = req.body;
+    var email = post_data.email;
+
+    con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields) {
+        
+        con.query('select * from collection_overview where collection_id=?',[result[0].collection_id],function(err,result,fields) {
+        
+            res.send(JSON.stringify(result));
+            console.log(result);
+            
+        });
+
+    });
+})
+
 app.listen(3000,() =>{
     console.log("API RUNNING");
 }); 
