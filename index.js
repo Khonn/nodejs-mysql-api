@@ -150,7 +150,7 @@
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
                 con.query('update `user_collection` set `num_of_titles` = `num_of_titles` + 1 where user_email=?',[email])
             con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[result[0].collection_id,title,author,type,genre]);
-            res.send("Collection Added!");
+            res.end("Collection Added!");
             })
             }
 
@@ -160,7 +160,7 @@
             //Creating new Collection_Overview
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
             con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[result[0].collection_id,title,author,type,genre]);
-            res.send("Succesfully added without +1");
+            res.end("Succesfully added without +1");
             })
         }
         });
