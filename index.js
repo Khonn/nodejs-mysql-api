@@ -148,10 +148,14 @@
             });
             if(result && result.length){
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
-                con.query('update `user_collection` set `num_of_titles` = `num_of_titles` + 1 where user_email=?',[email])
-            con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[result[0].collection_id,title,author,type,genre]);
+                con.on('error',function(err){
+                    console.log("[MYSQL ERROR]", err);
+                });
+                var collection_id = result[0].collection_id;
+                con.query('update `user_collection` set `num_of_titles` = `num_of_titles` + 1 where user_email=?',[email]);
+            con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[collection_id,title,author,type,genre]);
             res.end("Collection Added!");
-            })
+            });
             }
 
         else{
