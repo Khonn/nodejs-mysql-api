@@ -147,14 +147,15 @@
                 console.log("[MYSQL ERROR]", err);
             });
             if(result && result.length){
-            con.query('update `user_collection` set `num_of_titles` = `num_of_titles` + 1 where user_email=?',[email])
-            con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[collection_id,title,author,type,genre]);
+            con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
+                con.query('update `user_collection` set `num_of_titles` = `num_of_titles` + 1 where user_email=?',[email])
+            con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[result[0].collection_id,title,author,type,genre]);
             res.send("Succesfully added with +1");
- 
+            })
             }
 
         else{
-        //  Creating new User Collection
+            //Creating new User Collection
             con.query('insert into user_collection (`user_email`,`num_of_titles`) VALUES (?,?,NOW())',[email,1]);
             //Creating new Collection_Overview
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
