@@ -151,7 +151,7 @@
                 
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
                 var collection_id = result[0].collection_id;
-                con.query('select * from collection_overview where collection_id=?'[collection_id],function(err,result){
+                con.query('select title_name from collection_overview where collection_id=?'[collection_id],function(err,result){
                     if(result && result.length){
                         res.send("Title taken");
                     }
