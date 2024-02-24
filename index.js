@@ -53,7 +53,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 async function generate(params) {
     var generated_text = [];
-    const prompt = params;
+    const prompt = "Simplify the this text and limit the words below 1000: " + params;
     const model = await genAI.getGenerativeModel({ model: "gemini-pro" }); 
     const result = await model.generateContentStream([prompt]);
     for await(var chunk of result.stream){
@@ -90,7 +90,7 @@ app.post('/register/',(req,res,next)=>{
                 console.log("[MYSQL ERROR]", err);
                 res.json('Register Error');
             });     
-            res.json('Register  successful');
+            res.json('Register  Successful');
         });
         }
     });
@@ -113,7 +113,7 @@ app.post('/login/',(req,res,next)=>{
     if(encrypted_password == hashed_password)
     res.end(JSON.stringify(result[0]));
         else
-        res.end(JSON.stringify('Wrong Password'));
+        res.end(JSON.stringify('Wrong Passwordddddd'));
 
     }
 else{
@@ -169,7 +169,6 @@ app.post('/addcollection/',(req,res,next)=>{
     
 });
 
-
 app.post('/getcollection/',(req,res)=>{
     var post_data = req.body;
     var email = post_data.email;
@@ -177,6 +176,22 @@ app.post('/getcollection/',(req,res)=>{
     con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields) {
         
         con.query('select * from collection_overview where collection_id=?',[result[0].collection_id],function(err,result,fields) {
+        
+            res.send(JSON.stringify(result));
+            console.log(result);
+            
+        });
+
+    });
+})
+
+app.post('/getcollection_information/',(req,res)=>{
+    var post_data = req.body;
+    var title_name = post_data.title_name;
+
+    con.query('select title_id from collection_overview where title_name=?',[title_name],function(err,result,fields) {
+        
+        con.query('select * from title_details where title_id=?',[result[0].title_id],function(err,result,fields) {
         
             res.send(JSON.stringify(result));
             console.log(result);
