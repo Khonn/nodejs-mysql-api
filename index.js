@@ -6,6 +6,9 @@
     var mysql = require('mysql');
     var bodyParser = require('body-parser');
     const { stringify } = require("querystring");
+    const http = require('http');
+    const https = require('https');
+
 
     //Connect to mysql
 
@@ -63,8 +66,19 @@
         }
         return generated_text.join('').trimStart();
     }
-        
-
+    
+    //GOOGLE IMAGE API & GET IMAGE FUNC
+    function getImages(params, callback){
+        var url = "https://www.googleapis.com/customsearch/v1?key="+ process.env.IMAGE_SEARCH_API +"&cx="+ process.env.SEARCH_ENGINE +"&searchType=image&q="+ params;
+        https.get(url, res =>{
+            let body = '';
+            res.on('data', data =>{
+                body += data;
+            })
+            res.on('end', () => callback(body));
+     
+        })
+    }
 
 
     //Commands
@@ -204,6 +218,27 @@
         });
     })
 
+
+    app.post('/imageSearch/', async (req, res) => {
+        var post_data = req.body;
+        var params = post_data.params;
+        var object2 = new Object();
+        const linkObject = {};
+
+        getImages(params, (body) =>{
+            var obj = JSON.parse(body);
+            let jsonstring = `{"title": "${obj.items[0].title}", "link": "${obj.items[0].link}"}`;
+            for (let i = 1; i<obj.items.length;i++){
+                if (i === 0) {
+                    jsonstring += `{"title": "${obj.items[i].title}", "link": "${obj.items[i].link}"}\n`;
+                  } else {
+                    jsonstring += `,\n{"title": "${obj.items[i].title}", "link": "${obj.items[i].link}"}`;
+                  }
+            }
+            res.send(jsonstring);
+       })
+      });
+        
     app.listen(3000,() =>{
-        console.log("API RUNNING");
+        console.log("API RNNING");
     }); 
