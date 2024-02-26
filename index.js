@@ -196,6 +196,54 @@
 
     });
 
+    app.post('/deletecollection/',(req,res,next)=>{
+        var post_data = req.body;
+        var email = post_data.email;
+        var title = post_data.title;
+    
+    con.query('select * from user_collection where user_email=?',[email],function(err,result,fields){   
+            con.on('error',function(err){
+                console.log("[MYSQL ERROR]", err);
+            });
+            if(result && result.length){
+            con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
+                con.on('error',function(err){
+                    console.log("[MYSQL ERROR]", err);
+                });
+                if(result && result.length){
+                    var collection_id = result[0].collection_id;
+                    con.query('update user_collection set num_of_titles = num_of_titles -1 where user_email=?',[email], function(err,result){
+                        con.query('delete from collection_overview where collection_id = ? and title_name=?',[collection_id,title]);
+                        res.end("Record Deleted!");
+                    });
+                }
+            });
+            }
+        else{
+            res.send("Record not Found");          
+            
+        }
+        });
+
+
+    });
+
+    app.post('/getcollection/',(req,res)=>{
+        var post_data = req.body;
+        var email = post_data.email;
+
+        con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields) {
+            
+            con.query('select * from collection_overview where collection_id=?',[result[0].collection_id],function(err,result,fields) {
+            
+                res.send(JSON.stringify(result));
+                console.log(result);
+                
+            });
+
+        });
+    })
+
     app.post('/getcollection/',(req,res)=>{
         var post_data = req.body;
         var email = post_data.email;
