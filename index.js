@@ -174,15 +174,20 @@
                 }
             });
             }
-
         else{
             //Creating new User Collection
-            con.query('insert into user_collection (`user_email`,`num_of_titles`) VALUES (?,?,NOW())',[email,1],function(){
+            con.query('insert into user_collection (user_email,num_of_titles,num_of_entries,last_updated) VALUES (?,?,NULL,NOW())',[email,1],function(err,result,fields){
                 //Creating new Collection_Overview
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
-                con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[result[0].collection_id,title,author,type,genre]);
-                res.send("Succesfully added without +1");
-                })
+                con.on('error',function(err){
+                    console.log("[MYSQL ERROR]", err);
+                });
+                if(result && result.length){
+                    var collection_id = result[0].collection_id;
+                    con.query('insert into collection_overview (collection_id, title_name, author, type, genre, last_updated) VALUES (?,?,?,?,?,NOW())',[collection_id,title,author,type,genre]);
+                    res.send("Collection Added!");
+                }
+                });
                 
             });
         }
@@ -246,4 +251,4 @@
         
     app.listen(3000,() =>{
         console.log("API RNNING");
-    }); 
+    });     
