@@ -220,7 +220,7 @@
             });
             }
         else{
-            res.send("Record not Found");          
+            res.send("Record not Found");
             
         }
         });
@@ -296,6 +296,47 @@
             res.send(jsonstring);
        })
       });
+
+      app.post('/addtitle/',(req,res) =>{
+        var post_data = req.body;
+        var email = post_data.email;
+        var title_name = post_data.title_name;
+        var page = post_data.page;
+        var image_id = post_data.image_id;
+        var text_scanned = post_data.text_scanned;
+        var text_simplified = post_data.text_simplified;
+
+        con.query('select * from user_collection where user_email=?',[email],function(err,result,fields){   
+            con.on('error',function(err){
+                console.log("[MYSQL ERROR]", err);
+            });
+            if(result && result.length){
+            con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
+                con.on('error',function(err){
+                    console.log("[MYSQL ERROR]", err);
+                });
+                if(result && result.length){
+                    var collection_id = result[0].collection_id;
+   
+                    con.query('select title_id from collection_overview where collection_id=? and title_name=?',[collection_id,title_name],function(err,result,fields){
+                        if(result && result.length){
+                            var title_id = result[0].title_id;
+                        con.query('insert into title_details (title_id, page, image_id, text_scanned, text_simplified) values(?,?,?,?,?)',[title_id, page, image_id, text_scanned, text_simplified],function(err,result,fields){
+                                res.send(JSON.stringify(result));
+                        });
+                        }
+                    })
+                }
+            });
+            }
+        else{
+            res.send("Record not Found");
+            
+        }
+        });
+        
+
+      })
         
     app.listen(3000,() =>{
         console.log("API RNNING");
