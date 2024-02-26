@@ -165,21 +165,26 @@
                 con.on('error',function(err){
                     console.log("[MYSQL ERROR]", err);
                 });
-                var collection_id = result[0].collection_id;
-                con.query('update `user_collection` set `num_of_titles` = `num_of_titles` + 1 where user_email=?',[email]);
-            con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[collection_id,title,author,type,genre]);
-            res.send("Collection Added!");
+                if(result && result.length){
+                    var collection_id = result[0].collection_id;
+                    con.query('update user_collection set num_of_titles = num_of_titles + 1 where user_email=?',[email], function(err,result){
+                        con.query('insert into collection_overview (collection_id, title_name, author, type,genre, last_updated) VALUES (?,?,?,?,?,NOW())',[collection_id,title,author,type,genre]);
+                        res.end("Collection Added!");
+                    });
+                }
             });
             }
 
         else{
             //Creating new User Collection
-            con.query('insert into user_collection (`user_email`,`num_of_titles`) VALUES (?,?,NOW())',[email,1]);
-            //Creating new Collection_Overview
+            con.query('insert into user_collection (`user_email`,`num_of_titles`) VALUES (?,?,NOW())',[email,1],function(){
+                //Creating new Collection_Overview
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
-            con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[result[0].collection_id,title,author,type,genre]);
-            res.send("Succesfully added without +1");
-            })
+                con.query('insert into collection_overview (`collection_id`, `title_name`, `author`, `type`,`genre`, `last_updated`) VALUES (?,?,?,?,?,NOW())',[result[0].collection_id,title,author,type,genre]);
+                res.send("Succesfully added without +1");
+                })
+                
+            });
         }
         });
 
@@ -231,7 +236,7 @@
             for (let i = 1; i<obj.items.length;i++){
                 if (i === 0) {
                     jsonstring += `{"title": "${obj.items[i].title}", "link": "${obj.items[i].link}"}\n`;
-                  } else {
+                  } else {  
                     jsonstring += `,\n{"title": "${obj.items[i].title}", "link": "${obj.items[i].link}"}`;
                   }
             }
