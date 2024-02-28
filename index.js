@@ -244,22 +244,6 @@
         });
     })
 
-    app.post('/getcollection/',(req,res)=>{
-        var post_data = req.body;
-        var email = post_data.email;
-
-        con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields) {
-            
-            con.query('select * from collection_overview where collection_id=?',[result[0].collection_id],function(err,result,fields) {
-            
-                res.send(JSON.stringify(result));
-                console.log(result);
-                
-            });
-
-        });
-    })
-
     app.post('/getcollection_information/',(req,res)=>{
         var post_data = req.body;
         var title_name = post_data.title_name;
@@ -320,7 +304,7 @@
                     con.query('select title_id from collection_overview where collection_id=? and title_name=?',[collection_id,title_name],function(err,result,fields){
                         if(result && result.length){
                             var title_id = result[0].title_id;
-                        con.query('insert into title_details (title_id, page, image_id, text_scanned, text_simplified) values(?,?,?,?,?)',[title_id, page, 0, text_scanned, text_simplified],function(err,result,fields){
+                        con.query('insert into title_details (title_id, page, text_scanned, text_simplified) values(?,?,?,?)',[title_id, page, text_scanned, text_simplified],function(err,result,fields){
                                 res.send(JSON.stringify(result));
                         });
                         }
