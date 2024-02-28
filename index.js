@@ -327,12 +327,11 @@
             var output = result;
                 con.query('select * from type',function(err,result){
                     const mergedResults = [];
-            output.forEach((genre) => {
-                mergedResults.push(genre);
-
-                result.forEach((type) => {
-                    mergedResults.push(type);
-                });
+            output.forEach((genre_desc) => {
+                mergedResults.push(genre_desc);
+            });
+            result.forEach((type_desc) => {
+                mergedResults.push(type_desc);
             });
                     res.send(JSON.stringify(mergedResults));
                 })
