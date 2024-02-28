@@ -319,8 +319,27 @@
         });
         
 
-      })
+      });
         
+
+      app.get('/gettg/',(req,res) =>{
+        con.query('select * from genre',function(err,result){
+            var output = result;
+                con.query('select * from type',function(err,result){
+                    const mergedResults = [];
+            output.forEach((genre) => {
+                mergedResults.push(genre);
+
+                result.forEach((type) => {
+                    mergedResults.push(type);
+                });
+            });
+                    res.send(JSON.stringify(mergedResults));
+                })
+
+            
+        });
+    })
     app.listen(3000,() =>{
         console.log("API RNNING");
     });     
