@@ -217,7 +217,7 @@
                                 con.query('select title_id from collection_overview where collection_id=? and title_name=?',[collection_id,title],function(err,result,fields){
                                         if(result && result.length){
                                             var title_id = result[0].title_id;
-                                            con.query('select count(*) as count from title_details where title_id=?'[title_id],function(err,result){
+                                            con.query('select count(*) as count from title_details where title_id=?',[title_id],function(err,result){
                                                 if(result && result.length){
                                                     var count = result[0].count;
                                                     con.query('update user_collection set num_of_entries = num_of_entries - ? where user_email=?',[count,email]);
