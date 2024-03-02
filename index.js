@@ -282,7 +282,7 @@
 
             getImages(params, (body) =>{
                 var obj = JSON.parse(body);
-                let jsonstring = `{"title": "${obj.items[0].title}", "link": "${obj.items[0].link}"}`;
+                let jsonstring = `[{"title": "${obj.items[0].title}", "link": "${obj.items[0].link}"}`;
                 for (let i = 1; i<obj.items.length;i++){
                     if (i === 0) {
                         jsonstring += `{"title": "${obj.items[i].title}", "link": "${obj.items[i].link}"}\n`;
@@ -290,6 +290,7 @@
                         jsonstring += `,\n{"title": "${obj.items[i].title}", "link": "${obj.items[i].link}"}`;
                     }
                 }
+                jsonstring += `]`;
                 res.send(jsonstring);
         })
         });
