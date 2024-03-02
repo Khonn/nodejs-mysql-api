@@ -301,7 +301,7 @@ app.post('/addtitle/',(req,res) =>{
     var title_name = post_data.title_name;
     var page = post_data.page;
     var text_scanned = post_data.text_scanned;
-    var text_simplified = post_data.text_simplified;
+    var text_generated = post_data.text_generated;
     var entry_name = post_data.entry_name;
     var feature_chosen = post_data.feature_chosen;
 
@@ -321,17 +321,17 @@ app.post('/addtitle/',(req,res) =>{
                     if(result && result.length){
                         var title_id = result[0].title_id;
                     
-                    con.qeury('select text_id from title_collection where title_id=?'[title_id],function(err,result){
-                        if(result && result.length){
-                            con.qeury('insert into entry_texts (text_scanned, feature_chosen, text_generated) values(?,?,?)',[])
-                        }
-                    });
-
                     con.query('update user_collection set num_of_titles = num_of_entries +1 where user_email=?',[email]);
-                    con.qeury('insert into entry_texts (text_scanned, feature_chosen, text_generated) values(?,?,?) RETURNING text_id',[])
-                    con.query('insert into title_entries (title_id, entry_name, page, text_id) values(?,?,?,?,?,?,?)',[title_id, entry_name, page, text_scanned, feature_chosen, text_simplified],function(err,result,fields){
-                            res.send(JSON.stringify(result));
+                    con.query('insert into entry_texts (text_scanned, feature_chosen, text_generated) values(?,?,?)',[text_scanned,feature_chosen,text_generated]);
+                    con.query('SELECT LAST_INSERT_ID() AS text_id',function (err,result){
+                        if(result && result.length){
+                            var text_id = result[0].text_id;
+                            res.send(JSON.stringify(result[0].text_id));
+                          con.query('insert into title_entries (title_id, entry_name, page, text_id,image_id) values(?,?,?,?,NULL)',[title_id, entry_name, page,text_id],function(err,result,fields){
+    
                     });
+                        }
+                    })
                     }
                 })
             }
@@ -360,10 +360,11 @@ app.get('/gettg/',(req,res) =>{
         });
                 res.send(JSON.stringify(mergedResults));
             })
-
+    
         
     });
 })
+
 app.listen(3000,() =>{
     console.log("API RNNING");
 });     
