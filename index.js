@@ -54,9 +54,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //GEMINI API 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-async function generate(params) {
+async function generate_paraphrase(params) {
     var generated_text = [];
-    const prompt = "Simplify the this text and limit the words below 1000: " + params;
+    const prompt = "Paraphrase this text " + params + " ensure that make the prompt without errors. Also make the result paragraph and just send the result nothing else.";
     const model = await genAI.getGenerativeModel({ model: "gemini-pro" }); 
     const result = await model.generateContentStream([prompt]);
     for await(var chunk of result.stream){
@@ -66,6 +66,34 @@ async function generate(params) {
     }
     return generated_text.join('').trimStart();
 }
+
+async function generate_simplify(params) {
+    var generated_text = [];
+    const prompt = "Summarize this text " + params + " use simple words and ensure that make the prompt without errors. Also make the result paragraph and just send the result and nothing else.";
+    const model = await genAI.getGenerativeModel({ model: "gemini-pro" }); 
+    const result = await model.generateContentStream([prompt]);
+    for await(var chunk of result.stream){
+    var chunkText = chunk.text();
+    console.log(chunkText);
+    generated_text.push(chunkText);
+    }
+    return generated_text.join('').trimStart();
+}
+
+async function generate_translate(params,translate) {
+    var generated_text = [];
+    const prompt = "Translate " + params + "to" + translate + " just send the result nothing else.";
+    const model = await genAI.getGenerativeModel({ model: "gemini-pro" }); 
+    const result = await model.generateContentStream([prompt]);
+    for await(var chunk of result.stream){
+    var chunkText = chunk.text();
+    console.log(chunkText);
+    generated_text.push(chunkText);
+    }
+    return generated_text.join('').trimStart();
+}
+
+
 
 //GOOGLE IMAGE API & GET IMAGE FUNC
 function getImages(params, callback){
@@ -143,9 +171,19 @@ else{
 app.post('/generate/', async(req,res,next)=>{
     var post_data = req.body;
     var input_text = post_data.input_text;
-    var generated = await generate(input_text);
+    var selectedOption = post_data.selectedOption;
+    var language = post_data.language;
+    var generated = "";
+    if(selectedOption == "Simplified text:"){
+        generated = await generate_simplify(input_text);
+    }
+    else if(selectedOption == "Paraphrased text:"){
+        generated = await generate_paraphrase(input_text);
+    }
+    else if(selectedOption == "translated text:"){
+        generated = await generate_translate(input_text,language);
+    }
     res.send(generated);
-
 });
 
 app.post('/addcollection/',(req,res,next)=>{
@@ -337,9 +375,9 @@ app.post('/addtitle/',(req,res) =>{
             }
         });
         }
+
     else{
         res.send("Record not Found");
-        
     }
     });
     
