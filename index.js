@@ -82,7 +82,7 @@ async function generate_simplify(params) {
 
 async function generate_translate(params,translate) {
     var generated_text = [];
-    const prompt = "Translate " + params + "to" + translate + " just send the result nothing else.";
+    const prompt = "Translate " + params + "to" + translate;
     const model = await genAI.getGenerativeModel({ model: "gemini-pro" }); 
     const result = await model.generateContentStream([prompt]);
     for await(var chunk of result.stream){
