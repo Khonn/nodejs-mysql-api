@@ -82,7 +82,7 @@ async function generate_simplify(params) {
 
 async function generate_translate(params,translate) {
     var generated_text = [];
-    const prompt = "Translate " + params + "to" + translate;
+    const prompt = "Translate this text " + params + " to " + translate;
     const model = await genAI.getGenerativeModel({ model: "gemini-pro" }); 
     const result = await model.generateContentStream([prompt]);
     for await(var chunk of result.stream){
@@ -173,7 +173,7 @@ app.post('/generate/', async(req,res,next)=>{
     var input_text = post_data.input_text;
     var selectedOption = post_data.selectedOption;
     var language = post_data.Language;
-    var generated = "";
+    var generated = ""; 
     if(selectedOption == "Simplified text:"){
         generated = await generate_simplify(input_text);
     }
@@ -184,6 +184,7 @@ app.post('/generate/', async(req,res,next)=>{
         generated = await generate_translate(input_text,language);
     }
     res.send(generated);
+
 });
 
 app.post('/addcollection/',(req,res,next)=>{
@@ -301,7 +302,7 @@ app.post('/getcollection_information/',(req,res)=>{
 
     con.query('select title_id from collection_titles where title_name=?',[title_name],function(err,result,fields) {
         
-        con.query('select * from title_entries where title_id=?',[result[0].title_id],function(err,result,fields) {
+        con.query('SELECT t.entry_id, t.title_id, t.entry_name , e.text_id, t.page, e.text_scanned, e.feature_chosen, e.text_generated FROM entry_texts AS e JOIN title_entries AS t ON e.text_id = t.entry_id WHERE t.title_id = ?',[result[0].title_id],function(err,result,fields) {
         
             res.send(JSON.stringify(result));
             console.log(result);
