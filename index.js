@@ -57,7 +57,7 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 async function generate_paraphrase(params) {
     var generated_text = [];
     const prompt = "Paraphrase this text " + params + " ensure that make the prompt without errors. Also make the result paragraph and just send the result nothing else.";
-    const model = await genAI.getGenerativeModel({ model: "gemini-pro" }); 
+    const model = await genAI.getGenerativeModel({ model: "gemini-pro" });
     const result = await model.generateContentStream([prompt]);
     for await(var chunk of result.stream){
     var chunkText = chunk.text();
