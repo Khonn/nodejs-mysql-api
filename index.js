@@ -180,7 +180,7 @@ app.post('/generate/', async(req,res,next)=>{
     else if(selectedOption == "Paraphrased text:"){
         generated = await generate_paraphrase(input_text);
     }
-    else if(selectedOption == "translated text:"){
+    else if(selectedOption == "Translated text:"){
         generated = await generate_translate(input_text,language);
     }
     res.send(generated);
@@ -364,9 +364,8 @@ app.post('/addtitle/',(req,res) =>{
                     con.query('SELECT LAST_INSERT_ID() AS text_id',function (err,result){
                         if(result && result.length){
                             var text_id = result[0].text_id;
-                            res.send(JSON.stringify(result[0].text_id));
                           con.query('insert into title_entries (title_id, entry_name, page, text_id,image_id) values(?,?,?,?,NULL)',[title_id, entry_name, page,text_id],function(err,result,fields){
-    
+                            res.send("Title added successfully!")
                     });
                         }
                     })
