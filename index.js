@@ -302,12 +302,15 @@ app.post('/getcollection_information/',(req,res)=>{
 
     con.query('select title_id from collection_titles where title_name=?',[title_name],function(err,result,fields) {
         
-        con.query('SELECT t.entry_id, t.title_id, t.entry_name , e.text_id, t.page, e.text_scanned, e.feature_chosen, e.text_generated FROM entry_texts AS e JOIN title_entries AS t ON e.text_id = t.entry_id WHERE t.title_id = ?',[result[0].title_id],function(err,result,fields) {
-        
-            res.send(JSON.stringify(result));
-            console.log(result);
-            
-        });
+        if(result && result.length){
+            var title_id = result[0].title_id;
+            con.query('SELECT t.entry_id, t.title_id, t.entry_name , e.text_id, t.page, e.text_scanned, e.feature_chosen, e.text_generated FROM entry_texts AS e JOIN title_entries AS t ON e.text_id = t.text_id WHERE t.title_id = ?',[title_id],function(err,result,fields) { 
+            res.send(JSON.stringify(result))
+            });
+        }
+        else{
+            res.send("Could not find title");
+        }
 
     });
 })
