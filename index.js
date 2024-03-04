@@ -256,12 +256,16 @@ con.query('select * from user_collection where user_email=?',[email],function(er
                         con.query('select title_id from collection_titles where collection_id=? and title_name=?',[collection_id,title],function(err,result,fields){
                                 if(result && result.length){
                                     var title_id = result[0].title_id;
-                                    con.query('select count(*) as count from title_entries where title_id=?',[title_id],function(err,result){
+                                    con.query('select count(*) as count from entry_texts where text_id in ( select text_id from title_entries where title_id=?)',[title_id],function(err,result){
                                         if(result && result.length){
                                             var count = result[0].count;
+                                            con.query('SET FOREIGN_KEY_CHECKS=0');
                                             con.query('update user_collection set num_of_entries = num_of_entries - ? where user_email=?',[count,email]);
+                                            con.query('delete from DELETE FROM entry_texts WHERE text_id IN (SELECT text_id FROM title_entries WHERE title_id = ?)',[title_id]);
+
                                             con.query('delete from title_entries where title_id=?',[title_id]);
                                             con.query('delete from collection_titles where collection_id = ? and title_name=?',[collection_id,title]);
+                                            con.query('SET FOREIGN_KEY_CHECKS=1');
                                             res.send("Successfully deleted");
                                         }
                                     });
@@ -362,8 +366,14 @@ app.post('/addtitle/',(req,res) =>{
                 con.query('select title_id from collection_titles where collection_id=? and title_name=?',[collection_id,title_name],function(err,result,fields){
                     if(result && result.length){
                         var title_id = result[0].title_id;
-                    
-                    con.query('update user_collection set num_of_titles = num_of_entries +1 where user_email=?',[email]);
+                    con.query('select num_of_entries from user_collection where user_email =?',[email],function(err,result){
+                        if(result[0].num_of_entries == 'NULL' || result[0].num_of_entries == ''){
+                            con.query('update user_collection set num_of_entries = 1 where user_email=?',[email]);
+                        }
+                        else{
+                            con.query('update user_collection set num_of_titles = num_of_entries +1 where user_email=?',[email]);
+                        }
+                    });
                     con.query('insert into entry_texts (text_scanned, feature_chosen, text_generated) values(?,?,?)',[text_scanned,feature_chosen,text_generated]);
                     con.query('SELECT LAST_INSERT_ID() AS text_id',function (err,result){
                         if(result && result.length){
