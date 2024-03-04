@@ -180,7 +180,7 @@ app.post('/generate/', async(req,res,next)=>{
     else if(selectedOption == "Paraphrased text:"){
         generated = await generate_paraphrase(input_text);
     }
-    else if(selectedOption == "Translated text:"){
+    else if(selectedOption == "Translated text"){
         generated = await generate_translate(input_text,language);
     }
     res.send(generated);
