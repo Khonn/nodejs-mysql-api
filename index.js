@@ -172,7 +172,7 @@ app.post('/generate/', async(req,res,next)=>{
     var post_data = req.body;
     var input_text = post_data.input_text;
     var selectedOption = post_data.selectedOption;
-    var language = post_data.language;
+    var language = post_data.Language;
     var generated = "";
     if(selectedOption == "Simplified text:"){
         generated = await generate_simplify(input_text);
