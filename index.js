@@ -336,7 +336,7 @@
                                                 con.query('SET FOREIGN_KEY_CHECKS=0');
                                                 con.query('SET SQL_SAFE_UPDATES = 0');
                                                 con.query('DELETE FROM entry_texts WHERE text_id IN (SELECT text_id FROM title_entries WHERE title_id = ? and entry_name = ?);',[title_id,entry_name]);
-                                                con.query('delete from title_entries where title_id=?',[title_id]);
+                                                con.query('delete from title_entries where title_id=? and entry_name =?',[title_id,entry_name]);
                                                 con.query('SET FOREIGN_KEY_CHECKS=1');
                                                 con.query('SET SQL_SAFE_UPDATES = 1');
                                                 res.send("Successfully deleted");
