@@ -151,16 +151,35 @@
         if(result && result.length){
         var salt = result[0].salt;
         var encrypted_password = result[0].password;
-        var hashed_password = chechHashPassword(user_password,salt).passwordHash; 
-        if(encrypted_password == hashed_password)
-        res.end(JSON.stringify(result[0]));
-            else
-            res.end(JSON.stringify('Wrong Passwordddddd'));
+        var hashed_password = chechHashPassword(user_password,salt).passwordHash;
+        var output = "[";
+        var titles = "";
+        var entries = "";
+        output += JSON.stringify(result[0])
+        output = output.substring(0, output.length - 1);
+        con.query('select num_of_titles from user_collection where user_email=?',[email],function(err,result){
+            if(result && result.length){
+             titles = result[0].num_of_titles;
+             con.query('select num_of_entries from user_collection where user_email=?',[email],function(err,result){
+                if(result && result.length){
+                    entries = result[0].num_of_entries;
+                    if(entries == null)
+                        entries = 0;
+                    output += `",num_of_titles":"${titles}","num_of_entries":"${entries}"}]`;
+                    if(encrypted_password == hashed_password)
+                    res.end(output);
+                        else
+                        res.end(JSON.stringify('Wrong password'));
+                }
+
+            });
+            }
+        });
 
         }
     else{
 
-                res.json('[Login Error]');
+                res.json('User not found');
             } 
 
 
@@ -213,6 +232,7 @@
                 }
             });
             }
+
         else{
             //Creating new User Collection
             con.query('insert into user_collection (user_email,num_of_titles,num_of_entries,last_updated) VALUES (?,?,NULL,NOW())',[email,1],function(err,result,fields){
@@ -224,7 +244,7 @@
                 if(result && result.length){
                     var collection_id = result[0].collection_id;
                     con.query('insert into collection_titles (collection_id, title_name, author, type, genre, last_updated) VALUES (?,?,?,?,?,NOW())',[collection_id,title,author,type,genre]);
-                    res.send("Collection Added!");
+                    res.send("New Collection Added!");
                 }
                 });
                 
