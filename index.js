@@ -174,6 +174,11 @@
 
             });
             }
+            else{
+                output += `,"num_of_titles":"0","num_of_entries":"0"}`;
+                    if(encrypted_password == hashed_password)
+                    res.end(output);
+            }
         });
 
         }
