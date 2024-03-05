@@ -223,7 +223,7 @@
                 con.on('error',function(err){
                     console.log("[MYSQL ERROR]", err);
                 });
-                if(result && result.length){
+                if(result && result.length){    
                     var collection_id = result[0].collection_id;
                     con.query('update user_collection set num_of_titles = num_of_titles + 1 where user_email=?',[email], function(err,result){
                         con.query('insert into collection_titles (collection_id, title_name, author, type,genre, last_updated) VALUES (?,?,?,?,?,NOW())',[collection_id,title,author,type,genre]);
@@ -232,8 +232,8 @@
                 }
             });
             }
-
-        else{
+            else{
+                res.send(goboyo)
             //Creating new User Collection
             con.query('insert into user_collection (user_email,num_of_titles,num_of_entries,last_updated) VALUES (?,?,NULL,NOW())',[email,1],function(err,result,fields){
                 //Creating new collection_titles
@@ -422,30 +422,22 @@
         var feature_chosen = post_data.feature_chosen;
 
         con.query('select * from user_collection where user_email=?',[email],function(err,result,fields){
-
-            con.on('error',function(err){
-                console.log("[MYSQL ERROR]", err);
-            });
             if(result && result.length){
             con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
-                con.on('error',function(err){
-                    console.log("[MYSQL ERROR]", err);
-                });
                 if(result && result.length){
-                    var collection_id = result[0].collection_id;
-                    
+                    var collection_id = result[0].collection_id;    
                     con.query('select title_id from collection_titles where collection_id=? and title_name=?',[collection_id,title_name],function(err,result,fields){
                         if(result && result.length){
                             var title_id = result[0].title_id;
                         con.query('select num_of_entries from user_collection where user_email =?',[email],function(err,result){
-                            if(result[0].num_of_entries == 'NULL' || result[0].num_of_entries == ''){
-                                con.query('update user_collection set num_of_entries = 1 where user_email=?',[email]);
-                            }
-                            else{
-                                con.query('update user_collection set num_of_titles = num_of_entries +1 where user_email=?',[email]);
-                            }
-                        });
-                        con.query('insert into entry_texts (text_scanned, feature_chosen, text_generated) values(?,?,?)',[text_scanned,feature_chosen,text_generated]);
+                            if(result && result.length){
+                                var entry = result[0].num_of_entries;
+                                if(entry == null || entry == "")
+                                    con.query('update user_collection set num_of_entries = 1 where user_email=?',[email]);
+                                else
+                                con.query('update user_collection set num_of_entries = num_of_entries + 1 where user_email=?',[email]);
+
+                                con.query('insert into entry_texts (text_scanned, feature_chosen, text_generated) values(?,?,?)',[text_scanned,feature_chosen,text_generated]);
                         con.query('SELECT LAST_INSERT_ID() AS text_id',function (err,result){
                             if(result && result.length){
                                 var text_id = result[0].text_id;
@@ -454,8 +446,20 @@
                         });
                             }
                         })
+                            }
+                            else
+                            res.send("No value")
+                              
+                            
+                        });
+                        
                         }
+                        else
+                            res.send('title ID not found');
                     })
+                }
+                else{
+                    send.res('Collection ID not found');
                 }
             });
             }
