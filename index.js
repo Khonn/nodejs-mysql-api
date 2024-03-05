@@ -287,7 +287,7 @@
                                                 con.query('SET FOREIGN_KEY_CHECKS=0');
                                                 con.query('SET SQL_SAFE_UPDATES = 0');
                                                 con.query('update user_collection set num_of_entries = num_of_entries - ? where user_email=?',[count,email]);
-                                                con.query('DELETE FROM entry_text WHERE text_id IN (SELECT text_id FROM title_entries WHERE title_id = ?);',[title_id]);
+                                                con.query('DELETE FROM entry_texts WHERE text_id IN (SELECT text_id FROM title_entries WHERE title_id = ?);',[title_id]);
                                                 con.query('delete from title_entries where title_id=?',[title_id]);
                                                 con.query('delete from collection_titles where collection_id = ? and title_name=?',[collection_id,title]);
                                                 con.query('SET FOREIGN_KEY_CHECKS=1');
@@ -335,7 +335,7 @@
                                         var title_id = result[0].title_id;
                                                 con.query('SET FOREIGN_KEY_CHECKS=0');
                                                 con.query('SET SQL_SAFE_UPDATES = 0');
-                                                con.query('DELETE FROM entry_text WHERE text_id IN (SELECT text_id FROM title_entries WHERE title_id = ? and entry_name = ?);',[title_id,entry_name]);
+                                                con.query('DELETE FROM entry_texts WHERE text_id IN (SELECT text_id FROM title_entries WHERE title_id = ? and entry_name = ?);',[title_id,entry_name]);
                                                 con.query('delete from title_entries where title_id=?',[title_id]);
                                                 con.query('SET FOREIGN_KEY_CHECKS=1');
                                                 con.query('SET SQL_SAFE_UPDATES = 1');
