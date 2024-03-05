@@ -289,7 +289,7 @@
     app.post('/deletetitle/',(req,res,next)=>{
         var post_data = req.body;
         var email = post_data.email;
-        var title = post_data.title;
+        var title = post_data.title_name;
         var entry_name = post_data.entry_name;
 
     con.query('select * from user_collection where user_email=?',[email],function(err,result,fields){   
@@ -307,10 +307,14 @@
                             con.query('select title_id from collection_titles where collection_id=? and title_name=?',[collection_id,title],function(err,result,fields){
                                     if(result && result.length){
                                         var title_id = result[0].title_id;
-                                        con.query('select ')
-                                                con.query('DELETE FROM entry_texts WHERE NOT EXISTS (SELECT entry_id FROM title_entries AS T1 WHERE T1.text_id = entry_texts.text_id and title_id=? and entry_name = ?)',[title_id,entry_name]);
+                                                con.query('SET FOREIGN_KEY_CHECKS=0');
+                                                con.query('DELETE FROM entry_texts WHERE NOT EXISTS (SELECT text_id FROM title_entries AS T1 WHERE T1.text_id = entry_texts.text_id and title_id=? and entry_name = ?)',[title_id,entry_name]);
                                                 con.query('delete from title_entries where title_id=?',[title_id]);
                                                 res.send("Successfully deleted");
+                                                con.query('SET FOREIGN_KEY_CHECKS=1');
+                                    }
+                                    else{
+                                        res.send("cant detect title_id")
                                     }
 
                             });
