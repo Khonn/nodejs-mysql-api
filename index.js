@@ -286,6 +286,49 @@
     });
 
 
+    app.post('/deletetitle/',(req,res,next)=>{
+        var post_data = req.body;
+        var email = post_data.email;
+        var title = post_data.title;
+        var entry_name = post_data.entry_name;
+
+    con.query('select * from user_collection where user_email=?',[email],function(err,result,fields){   
+            con.on('error',function(err){
+                console.log("[MYSQL ERROR]", err);
+            });
+            if(result && result.length){
+            con.query('select collection_id from user_collection where user_email=?',[email],function(err,result,fields){
+                con.on('error',function(err){
+                    console.log("[MYSQL ERROR]", err);
+                });
+                if(result && result.length){
+                    var collection_id = result[0].collection_id;
+                    con.query('update user_collection set num_of_entries = num_of_entries -1 where user_email=?',[email]);
+                            con.query('select title_id from collection_titles where collection_id=? and title_name=?',[collection_id,title],function(err,result,fields){
+                                    if(result && result.length){
+                                        var title_id = result[0].title_id;
+                                        con.query('select ')
+                                                con.query('DELETE FROM entry_texts WHERE NOT EXISTS (SELECT entry_id FROM title_entries AS T1 WHERE T1.text_id = entry_texts.text_id and title_id=?)',[title_id]);
+                                                con.query('delete from title_entries where title_id=?',[title_id]);
+                                                res.send("Successfully deleted");
+                                    }
+
+                            });
+
+                }
+                else{
+                    res.send("Cannot get collection ID");
+                }
+            });
+            }
+        else{
+            res.send("Record not Found"); 
+        }
+        });
+
+
+    });
+
 
     app.post('/getcollection/',(req,res)=>{
         var post_data = req.body;
