@@ -487,6 +487,27 @@
         });
     })
 
+ app.post('/getet/',(req,res)=>{
+    var post_data = req.body;
+    var email = post_data.email;
+
+    con.query('select num_of_titles from user_collection where user_email=?',[email],function(err,result){
+        if(result && result.length){
+         titles = result[0].num_of_titles;
+         con.query('select num_of_entries from user_collection where user_email=?',[email],function(err,result){
+            if(result && result.length){
+                entries = result[0].num_of_entries;
+                if(entries == null)
+                    entries = 0;
+                var output = `{"num_of_titles":"${titles}","num_of_entries":"${entries}"}`;
+                res.send(output);
+            }
+        }
+    )}
+
+ })
+});
+
     app.listen(3000,() =>{
         console.log("API RNNING");
     });     
