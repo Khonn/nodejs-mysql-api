@@ -165,7 +165,7 @@
                     entries = result[0].num_of_entries;
                     if(entries == null)
                         entries = 0;
-                    output += `,num_of_titles":"${titles}","num_of_entries":"${entries}"}`;
+                    output += `,"num_of_titles":"${titles}","num_of_entries":"${entries}"}`;
                     if(encrypted_password == hashed_password)
                     res.end(output);
                         else
