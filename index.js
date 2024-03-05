@@ -152,6 +152,7 @@
         var salt = result[0].salt;
         var encrypted_password = result[0].password;
         var hashed_password = chechHashPassword(user_password,salt).passwordHash;
+        var output = "";
         var titles = "";
         var entries = "";
         output += JSON.stringify(result[0])
