@@ -238,7 +238,6 @@
             });
             }
             else{
-                res.send(goboyo)
             //Creating new User Collection
             con.query('insert into user_collection (user_email,num_of_titles,num_of_entries,last_updated) VALUES (?,?,NULL,NOW())',[email,1],function(err,result,fields){
                 //Creating new collection_titles
@@ -287,7 +286,7 @@
                                                 var count = result[0].count;
                                                 con.query('SET FOREIGN_KEY_CHECKS=0');
                                                 con.query('update user_collection set num_of_entries = num_of_entries - ? where user_email=?',[count,email]);
-                                                con.query('DELETE FROM entry_texts WHERE NOT EXISTS (SELECT * FROM title_entries AS T1 WHERE T1.text_id = entry_texts.text_id and title_id=?)',[title_id]);
+                                                con.query('DELETE FROM entry_text WHERE text_id IN (SELECT text_id FROM title_entries WHERE title_id = ?);',[title_id]);
                                                 con.query('delete from title_entries where title_id=?',[title_id]);
                                                 con.query('delete from collection_titles where collection_id = ? and title_name=?',[collection_id,title]);
                                                 con.query('SET FOREIGN_KEY_CHECKS=1');
