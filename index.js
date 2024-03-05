@@ -152,7 +152,6 @@
         var salt = result[0].salt;
         var encrypted_password = result[0].password;
         var hashed_password = chechHashPassword(user_password,salt).passwordHash;
-        var output = "[";
         var titles = "";
         var entries = "";
         output += JSON.stringify(result[0])
@@ -165,11 +164,11 @@
                     entries = result[0].num_of_entries;
                     if(entries == null)
                         entries = 0;
-                    output += `",num_of_titles":"${titles}","num_of_entries":"${entries}"}]`;
+                    output += `",num_of_titles":"${titles}","num_of_entries":"${entries}"}`;
                     if(encrypted_password == hashed_password)
                     res.end(output);
                         else
-                        res.end(JSON.stringify('Wrong password'));
+                        res.end(JSON.stringify('[Wrong password]'));
                 }
 
             });
@@ -179,7 +178,7 @@
         }
     else{
 
-                res.json('User not found');
+                res.json('[User not found]');
             } 
 
 
