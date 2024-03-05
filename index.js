@@ -308,7 +308,7 @@
                                     if(result && result.length){
                                         var title_id = result[0].title_id;
                                         con.query('select ')
-                                                con.query('DELETE FROM entry_texts WHERE NOT EXISTS (SELECT entry_id FROM title_entries AS T1 WHERE T1.text_id = entry_texts.text_id and title_id=?)',[title_id]);
+                                                con.query('DELETE FROM entry_texts WHERE NOT EXISTS (SELECT entry_id FROM title_entries AS T1 WHERE T1.text_id = entry_texts.text_id and title_id=? and entry_name = ?)',[title_id,entry_name]);
                                                 con.query('delete from title_entries where title_id=?',[title_id]);
                                                 res.send("Successfully deleted");
                                     }
